@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Recetario Laminados</title>
+<meta name="theme-color" content="#b1471a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Laminados" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #efe6d6;
+    --bg-2: #e6dac4;
+    --paper: #fbf6ec;
+    --ink: #2a1d12;
+    --ink-soft: #5a4636;
+    --muted: #9a8771;
+    --accent: #b1471a;
+    --accent-deep: #7a2f10;
+    --accent-soft: #f5dcc4;
+    --gold: #c98a3b;
+    --line: #e3d6bf;
+    --shadow: 0 12px 28px -16px rgba(80, 45, 20, 0.35), 0 2px 6px rgba(80, 45, 20, 0.06);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #f6ead4 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #f1d9b8 0%, transparent 55%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    padding: 56px 20px 28px;
+    position: relative;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    background: var(--accent-soft);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  header h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    margin: 14px 0 6px;
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    font-weight: 900;
+    color: var(--accent-deep);
+    letter-spacing: -0.5px;
+    line-height: 1.05;
+  }
+  header h1 em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  header p {
+    margin: 10px auto 0;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    max-width: 520px;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 22px auto 0;
+    color: var(--gold);
+  }
+  .divider::before, .divider::after {
+    content: "";
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .divider span {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+
+  .selector-wrap {
+    max-width: 520px;
+    margin: 8px auto 0;
+    padding: 0 20px;
+  }
+  .selector-wrap label {
+    display: block;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  #recipe-picker {
+    width: 100%;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--accent-deep);
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    text-align: center;
+    text-align-last: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  #recipe-picker:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(177, 71, 26, 0.15), var(--shadow);
+  }
+
+  main {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 22px 22px 18px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    overflow: hidden;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 100%);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 36px -16px rgba(80, 45, 20, 0.45), 0 4px 10px rgba(80, 45, 20, 0.08);
+  }
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--accent-deep);
+    letter-spacing: -0.2px;
+    line-height: 1.1;
+  }
+  .badge {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    background: linear-gradient(180deg, #fff8ea, #fbf1de);
+    border: 1px solid var(--line);
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+  .controls label {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .x-label {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .controls input[type="number"],
+  .controls select {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #fff;
+    color: var(--ink);
+    width: 96px;
+    font-weight: 600;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .controls input[type="number"]:focus,
+  .controls select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(177, 71, 26, 0.15);
+  }
+  .controls select {
+    width: auto;
+    min-width: 120px;
+    cursor: pointer;
+  }
+  .reset {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .reset:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+  td {
+    padding: 9px 4px;
+    border-bottom: 1px dashed var(--line);
+    font-size: 0.96rem;
+  }
+  td.ing {
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  td.qty {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--accent-deep);
+    white-space: nowrap;
+    font-size: 1rem;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px 20px 36px;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  footer .heart {
+    color: var(--accent);
+  }
+
+  @media (max-width: 480px) {
+    header { padding: 40px 16px 20px; }
+    main { padding: 16px 14px 40px; gap: 16px; }
+    .card { padding: 18px 18px 14px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <span class="eyebrow">Equipo de Laminados</span>
+  <h1>Recetario <em>Laminados</em></h1>
+  <p>Multiplicá cada receta según lo que necesites preparar hoy.</p>
+  <div class="divider"><span>· · ·</span></div>
+</header>
+
+<div class="selector-wrap">
+  <label for="recipe-picker">Elegí una masa</label>
+  <select id="recipe-picker"></select>
+</div>
+
+<main id="recipes"></main>
+
+<script>
+const recipes = [
+  {
+    name: "MM",
+    ingredients: [
+      ["H 0000", 1083],
+      ["H 000", 792],
+      ["AZUCAR", 170],
+      ["RECORTE", 250],
+      ["LECHE", 550],
+      ["HUEVOS", 8],
+      ["MIEL", 50],
+      ["ESENCIA", 15],
+      ["LEVA FRESCA", 25],
+      ["SAL", 42],
+      ["MANTECA", 140],
+      ["RAYADURA N.", 1],
+    ],
+  },
+  {
+    name: "CROI",
+    ingredients: [
+      ["H 0000", 500],
+      ["H 000", 1500],
+      ["AZUCAR", 220],
+      ["MASA.M", 200],
+      ["RECORTE", 200],
+      ["AGUA", 510],
+      ["LECHE", 385],
+      ["LEVA SECA", 3],
+      ["SAL", 52],
+      ["MANTECA", 85],
+    ],
+  },
+  {
+    name: "CROI MARGA",
+    ingredients: [
+      ["H 0000", 500],
+      ["H 000", 1500],
+      ["AZUCAR", 220],
+      ["RECORTE", 200],
+      ["AGUA", 510],
+      ["LECHE", 385],
+      ["LEVA FRESCA", 15],
+      ["SAL", 52],
+      ["MARGARINA", 85],
+    ],
+  },
+  {
+    name: "MG",
+    ingredients: [
+      ["H 0000", 1330],
+      ["H 000", 170],
+      ["AZUCAR", 180],
+      ["MASA.M", 200],
+      ["RECORTE", 200],
+      ["AGUA", 338],
+      ["LECHE", 355],
+      ["LEVA SECA", 3],
+      ["SAL", 45],
+      ["MANTECA", 22.5],
+      ["GRASA", 36.5],
+    ],
+  },
+  {
+    name: "M.S",
+    ingredients: [
+      ["H 0000", 1330],
+      ["H 000", 170],
+      ["AZUCAR", 180],
+      ["RECORTE", 200],
+      ["AGUA", 338],
+      ["LECHE", 355],
+      ["LEVA FRESCA", 15],
+      ["SAL", 45],
+      ["MARGARINA", 22.5],
+      ["GRASA", 36.5],
+    ],
+  },
+  {
+    name: "HOJ",
+    ingredients: [
+      ["H 0000", 1200],
+      ["H 000", 900],
+      ["AZUCAR", 200],
+      ["AGUA", 1050],
+      ["SAL", 60],
+    ],
+  },
+  {
+    name: "M.Dulces",
+    ingredients: [
+      ["H 0000", 1225],
+      ["H 000", 125],
+      ["AZUCAR", 128],
+      ["RECORTE", 200],
+      ["AGUA", 125],
+      ["LECHE", 385],
+      ["HUEVOS", 5],
+      ["MIEL", 33],
+      ["LEVA FRESCA", 15],
+      ["SAL", 32],
+      ["MANTECA", 100],
+    ],
+  },
+  {
+    name: "MASA MADRE",
+    type: "select",
+    options: {
+      "x2000": [
+        ["MASA MADRE", 700],
+        ["H.ORGANICA", 1550],
+        ["INT 000", 170],
+        ["AGUA", 1030],
+      ],
+      "x3200": [
+        ["MASA MADRE", 960],
+        ["H.ORGANICA", 2070],
+        ["INT 000", 230],
+        ["AGUA", 1380],
+      ],
+      "x4800": [
+        ["MASA MADRE", 1440],
+        ["H.ORGANICA", 2700],
+        ["INT 000", 300],
+        ["AGUA", 1800],
+      ],
+    },
+  },
+  {
+    name: "PASTELERA",
+    ingredients: [
+      ["Maicena", 140],
+      ["Azucar", 250],
+      ["Huevos", 4],
+      ["Yemas", 2],
+      ["Leche", 1000],
+      ["Esencia", "1,5T."],
+    ],
+  },
+  {
+    name: "FROSTING",
+    ingredients: [
+      ["Q.Crema", 1500],
+      ["Azucar I.", 700],
+      ["Jugo Naranjas", 200],
+      ["Rayaduras", 2],
+      ["Manteca", 200],
+    ],
+  },
+  {
+    name: "ALMIBAR",
+    ingredients: [
+      ["Agua", 4000],
+      ["Azucar", 4000],
+      ["Naranjas", 6],
+    ],
+  },
+  {
+    name: "Baguels",
+    ingredients: [
+      ["Harina 0000", 1800],
+      ["Harina 000", 600],
+      ["Azucar", 300],
+      ["Leche", 800],
+      ["Huevos", "450g"],
+      ["Leva fresca", 50],
+      ["Sal", 40],
+      ["Manteca", 200],
+    ],
+  },
+];
+
+function formatQty(value, multiplier) {
+  if (typeof value === "string") {
+    const m = value.match(/^([\d.,]+)(.*)$/);
+    if (m) {
+      const num = parseFloat(m[1].replace(",", "."));
+      if (!isNaN(num)) {
+        return formatNumber(num * multiplier) + m[2];
+      }
+    }
+    return value;
+  }
+  return formatNumber(value * multiplier);
+}
+
+function formatNumber(n) {
+  if (Number.isInteger(n)) return n.toString();
+  const rounded = Math.round(n * 100) / 100;
+  return rounded.toString().replace(".", ",");
+}
+
+function renderTable(ingredients, multiplier) {
+  let html = "<table>";
+  for (const [ing, qty] of ingredients) {
+    html += `<tr><td class="ing">${ing}</td><td class="qty">${formatQty(qty, multiplier)}</td></tr>`;
+  }
+  html += "</table>";
+  return html;
+}
+
+function buildCard(recipe, idx) {
+  const card = document.createElement("section");
+  card.className = "card";
+
+  const head = document.createElement("div");
+  head.className = "card-head";
+  const title = document.createElement("h2");
+  title.textContent = recipe.name;
+  const badge = document.createElement("span");
+  badge.className = "badge";
+  badge.textContent = recipe.type === "select" ? "Tamaño" : "Receta";
+  head.appendChild(title);
+  head.appendChild(badge);
+  card.appendChild(head);
+
+  const controls = document.createElement("div");
+  controls.className = "controls";
+  const tableWrap = document.createElement("div");
+
+  if (recipe.type === "select") {
+    const label = document.createElement("label");
+    label.textContent = "Elegir";
+    label.htmlFor = `sel-${idx}`;
+    const select = document.createElement("select");
+    select.id = `sel-${idx}`;
+    for (const opt of Object.keys(recipe.options)) {
+      const o = document.createElement("option");
+      o.value = opt;
+      o.textContent = opt;
+      select.appendChild(o);
+    }
+    controls.appendChild(label);
+    controls.appendChild(select);
+    card.appendChild(controls);
+    card.appendChild(tableWrap);
+
+    const update = () => {
+      tableWrap.innerHTML = renderTable(recipe.options[select.value], 1);
+    };
+    select.addEventListener("change", update);
+    update();
+  } else {
+    const label = document.createElement("label");
+    label.className = "x-label";
+    label.textContent = "×";
+    label.htmlFor = `mul-${idx}`;
+    const input = document.createElement("input");
+    input.type = "number";
+    input.id = `mul-${idx}`;
+    input.min = "0";
+    input.step = "0.5";
+    input.value = "1";
+    const reset = document.createElement("button");
+    reset.className = "reset";
+    reset.textContent = "Reset";
+
+    controls.appendChild(label);
+    controls.appendChild(input);
+    controls.appendChild(reset);
+    card.appendChild(controls);
+    card.appendChild(tableWrap);
+
+    const update = () => {
+      const m = parseFloat(input.value.replace(",", ".")) || 0;
+      tableWrap.innerHTML = renderTable(recipe.ingredients, m);
+    };
+    input.addEventListener("input", update);
+    reset.addEventListener("click", () => {
+      input.value = "1";
+      update();
+    });
+    update();
+  }
+
+  return card;
+}
+
+const main = document.getElementById("recipes");
+const picker = document.getElementById("recipe-picker");
+const cards = recipes.map((r, i) => buildCard(r, i));
+
+recipes.forEach((r, i) => {
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = r.name;
+  picker.appendChild(opt);
+});
+
+function showRecipe(i) {
+  main.innerHTML = "";
+  main.appendChild(cards[i]);
+}
+
+picker.addEventListener("change", (e) => showRecipe(parseInt(e.target.value, 10)));
+showRecipe(0);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
